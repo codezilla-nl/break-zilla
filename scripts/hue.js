@@ -4,18 +4,21 @@ MY.Hue.prototype = {
 	setOn: function (on, lightId) {
 		fetch(this.getUrl(lightId), {
 			method: 'put',
-			body: {'on': on}
+			body: JSON.stringify({
+                'on': on,
+                'hue': 25500
+            })
 		});
 	},
 
 	setHue: function (hue, lightId) {
 		fetch(this.getUrl(lightId), {
 			method: 'put',
-			body: {
+			body: JSON.stringify({
 				'hue': hue,
 				'bri': 10,
 				'sat': 250
-			}
+			})
 		});
 	},
 
