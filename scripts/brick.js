@@ -4,6 +4,7 @@ MY.Brick = function (x, y, width, height) {
 	this.width = width;
 	this.height = height;
 	this.color = '#0095DD';
+	this.state = 1;
 };
 
 MY.Brick.prototype = {
