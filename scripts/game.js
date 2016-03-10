@@ -5,11 +5,17 @@ MY.Game.prototype = {
 		this.canvas = canvas;
 		this.context = canvas.getContext('2d');
 
+		this.hue = new MY.Hue();
+		this.hue.setOn(true);
+
 		this.isLeftKeyDown = false;
 		this.isRightKeyDown = false;
 
 		this.deltaX = 2;
 		this.deltaY = -2;
+
+		this.lives = 3;
+		this.colorsLives = [0, 12750, 25500];
 
 		this.initBall();
 		this.initBricks();
@@ -106,6 +112,11 @@ MY.Game.prototype = {
 				}
 			}
 		}
+	},
+
+	decreaseLives: function () {
+		this.lives -= 1;
+		this.hue.setHue(this.colorsLives[this.lives - 1])
 	},
 
 	render: function () {
