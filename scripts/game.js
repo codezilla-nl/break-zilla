@@ -5,9 +5,6 @@ MY.Game.prototype = {
 		this.canvas = canvas;
 		this.context = canvas.getContext('2d');
 
-		this.hue = new MY.Hue();
-		this.hue.setOn(true, 3);
-
 		this.moveX = 0;
 
 		this.deltaX = 2;
@@ -15,6 +12,10 @@ MY.Game.prototype = {
 
 		this.lives = 3;
 		this.colorsLives = [0, 12750, 25500];
+
+		this.hue = new MY.Hue();
+		this.hue.setOn(true, 3);
+		this.hue.setHue(this.colorsLives, this.lives - 1);
 
 		this.initBall();
 		this.initBricks();
