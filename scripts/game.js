@@ -20,9 +20,7 @@ MY.Game.prototype = {
 		this.initBricks();
 		this.initPaddle();
 
-		MY.PubSub.subscribe('updatePosition', function (x) {
-			this.moveX = x || 0;
-		});
+		MY.PubSub.subscribe('updatePosition', this.onUpdatePosition, this);
 
 		document.addEventListener('keydown', this.onKeyDown.bind(this));
 		document.addEventListener('keyup', this.onKeyUp.bind(this));
@@ -82,6 +80,7 @@ MY.Game.prototype = {
 			if (this.ball.x > this.paddle.x && this.ball.x < this.paddle.x + this.paddle.width) {
 				this.deltaY = -this.deltaY;
 			} else {
+				this.decreaseLives();
 				this.ball.x = this.canvas.width / 2;
 				this.ball.y = this.canvas.height - 30;
 				this.deltaX = 3;
@@ -146,6 +145,10 @@ MY.Game.prototype = {
 
 	renderPaddle: function () {
 		this.paddle.render(this.context);
+	},
+
+	onUpdatePosition: function (x) {
+		this.moveX = x || 0;
 	},
 
 	onKeyDown: function (event) {
