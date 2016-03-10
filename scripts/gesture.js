@@ -3,34 +3,36 @@ MY.Gesture = function () {
 };
 
 MY.Gesture.prototype = {
-	initialize: function() {
+	initialize: function () {
+		if (typeof Leap === 'undefined') {
+			return;
+		}
+
 		//Extend options
 		this.options = {
 			paused: false
 		};
+
 		this.constants = {
-			previousFrame: null,
-			paused: false,
-			pauseOnGesture: false,
-			hand: {}
-		}
+			previousFrame: null, paused: false, pauseOnGesture: false, hand: {}
+		};
 
 		this.setup();
 	},
 
-	setup: function() {
-		var controllerOptions = { 
-			enableGestures: true 
+	setup: function () {
+		var controllerOptions = {
+			enableGestures: true
 		};
 
 		var that = this;
-		Leap.loop(controllerOptions, function(frame) {
+		Leap.loop(controllerOptions, function (frame) {
 			if (that.options.paused) {
 				return;
 			}
 
 			that.processHand(frame);
-			
+
 			var position = (that.constants.hand.direction) ? that.constants.hand.direction[0] : false;
 			MY.PubSub.publish('updatePosition', position);
 
@@ -38,7 +40,7 @@ MY.Gesture.prototype = {
 		});
 	},
 
-	processHand: function(frame) {
+	processHand: function (frame) {
 		var hand = {};
 		if (frame.hands.length > 0) {
 			for (var i = 0; i < frame.hands.length; i++) {
@@ -48,8 +50,7 @@ MY.Gesture.prototype = {
 				hand["Type"] = hand.type;
 				hand["direction"] = hand.direction;
 			}
-		}
-		else {
+		} else {
 			hand = {};
 		}
 
@@ -69,16 +70,14 @@ MY.Gesture.prototype = {
 	// 	}
 	// },
 
-	vectorToString: function(vector, digits) {
+	vectorToString: function (vector, digits) {
 		if (typeof digits === "undefined") {
 			digits = 1;
 		}
-		return "(" + vector[0].toFixed(digits) + ", "
-				 + vector[1].toFixed(digits) + ", "
-				 + vector[2].toFixed(digits) + ")";
+		return "(" + vector[0].toFixed(digits) + ", " + vector[1].toFixed(digits) + ", " + vector[2].toFixed(digits) + ")";
 	},
 
-	togglePause: function() {
+	togglePause: function () {
 		paused = !paused;
 
 		if (paused) {
@@ -88,7 +87,7 @@ MY.Gesture.prototype = {
 		}
 	},
 
-	pauseForGestures: function() {
+	pauseForGestures: function () {
 		if (document.getElementById("pauseOnGesture").checked) {
 			pauseOnGesture = true;
 		} else {
@@ -96,5 +95,3 @@ MY.Gesture.prototype = {
 		}
 	}
 };
-
-

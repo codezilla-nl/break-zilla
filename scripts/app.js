@@ -7,8 +7,9 @@ MY.App.prototype = {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 
-		var game = new MY.Game();
 		var gesture = new MY.Gesture();
+
+		var game = new MY.Game();
 		game.init(canvas);
 	}
 };

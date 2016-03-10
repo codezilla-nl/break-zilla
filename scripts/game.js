@@ -6,10 +6,9 @@ MY.Game.prototype = {
 		this.context = canvas.getContext('2d');
 
 		this.hue = new MY.Hue();
-		this.hue.setOn(true);
+		this.hue.setOn(true, 3);
 
-		this.isLeftKeyDown = false;
-		this.isRightKeyDown = false;
+		this.moveX = 0;
 
 		this.deltaX = 2;
 		this.deltaY = -2;
@@ -21,12 +20,14 @@ MY.Game.prototype = {
 		this.initBricks();
 		this.initPaddle();
 
+		MY.PubSub.subscribe('updatePosition', function (x) {
+			this.moveX = x || 0;
+		});
+
 		document.addEventListener('keydown', this.onKeyDown.bind(this));
 		document.addEventListener('keyup', this.onKeyUp.bind(this));
 
-		MY.PubSub.subscribe('updatePosition', function(x) {
-			console.info(x);
-		});
+		window.requestAnimationFrame(this.tick.bind(this));
 	},
 
 	initBall: function () {
@@ -92,10 +93,10 @@ MY.Game.prototype = {
 		this.ball.x += this.deltaX;
 		this.ball.y += this.deltaY;
 
-		if (this.isLeftKeyDown && this.paddle.x - 10 >= 0) {
+		if (this.moveX < 0 && this.paddle.x - 10 >= 0) {
 			this.paddle.x -= 10;
 		}
-		if (this.isRightKeyDown && this.paddle.x + 10 <= this.canvas.width - this.paddle.width) {
+		if (this.moveX > 0 && this.paddle.x + 10 <= this.canvas.width - this.paddle.width) {
 			this.paddle.x += 10;
 		}
 	},
@@ -116,7 +117,7 @@ MY.Game.prototype = {
 
 	decreaseLives: function () {
 		this.lives -= 1;
-		this.hue.setHue(this.colorsLives[this.lives - 1])
+		this.hue.setHue(this.colorsLives[this.lives - 1], 3)
 	},
 
 	render: function () {
@@ -149,17 +150,15 @@ MY.Game.prototype = {
 
 	onKeyDown: function (event) {
 		if (event.which === MY.Key.LEFT) {
-			this.isLeftKeyDown = true;
+			this.moveX = -1;
 		} else if (event.which === MY.Key.RIGHT) {
-			this.isRightKeyDown = true;
+			this.moveX = 1;
 		}
 	},
 
 	onKeyUp: function (event) {
-		if (event.which === MY.Key.LEFT) {
-			this.isLeftKeyDown = false;
-		} else if (event.which === MY.Key.RIGHT) {
-			this.isRightKeyDown = false;
+		if (event.which === MY.Key.LEFT || event.which === MY.Key.RIGHT) {
+			this.moveX = 0;
 		}
 	}
 };
