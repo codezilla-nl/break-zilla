@@ -15,7 +15,11 @@ MY.Hue.prototype = {
     setHue: function (color, lightID) {
         fetch(this.url(lightID), {
             method: 'put',
-            body: {'hue': color}
+            body: {
+                'hue': color,
+                'bri': 10,
+                'sat': 250
+            }
         })
     }
 };
