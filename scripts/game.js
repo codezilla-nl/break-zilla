@@ -18,7 +18,9 @@ MY.Game.prototype = {
 		document.addEventListener('keydown', this.onKeyDown.bind(this));
 		document.addEventListener('keyup', this.onKeyUp.bind(this));
 
-		window.requestAnimationFrame(this.tick.bind(this));
+		MY.PubSub.subscribe('updatePosition', function(x) {
+			console.info(x);
+		});
 	},
 
 	initBall: function () {
