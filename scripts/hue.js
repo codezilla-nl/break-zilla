@@ -3,7 +3,13 @@ MY.Hue = function () {
 };
 
 MY.Hue.prototype = {
-    setColor: function (color) {
+    setOn: function (on) {
+        fetch(this.url, {
+            method: 'put',
+            body: {'on': on}
+        })
+    },
+    setHue: function (color) {
         fetch(this.url, {
             method: 'put',
             body: {'hue': color}
