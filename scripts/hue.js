@@ -1,25 +1,25 @@
-MY.Hue = function () {
-    this.url = function (lightID) {
-        return 'http://10.1.2.152/api/c29b99563dd14f752873ce711f9fe7c/lights/' + lightID + '/state';
-    };
-};
+MY.Hue = function () {};
 
 MY.Hue.prototype = {
-    setOn: function (on, lightID) {
-        fetch(this.url(lightID), {
-            method: 'put',
-            body: {'on': on}
-        })
-    },
+	setOn: function (on, lightId) {
+		fetch(this.getUrl(lightId), {
+			method: 'put',
+			body: {'on': on}
+		});
+	},
 
-    setHue: function (color, lightID) {
-        fetch(this.url(lightID), {
-            method: 'put',
-            body: {
-                'hue': color,
-                'bri': 10,
-                'sat': 250
-            }
-        })
+	setHue: function (hue, lightId) {
+		fetch(this.getUrl(lightId), {
+			method: 'put',
+			body: {
+				'hue': hue,
+				'bri': 10,
+				'sat': 250
+			}
+		});
+	},
+
+    getUrl: function (lightId) {
+        return 'http://10.1.2.152/api/c29b99563dd14f752873ce711f9fe7c/lights/' + lightId + '/state';
     }
 };
