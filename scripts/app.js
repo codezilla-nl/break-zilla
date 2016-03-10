@@ -8,6 +8,6 @@ MY.App.prototype = {
 		canvas.height = window.innerHeight;
 
 		var game = new MY.Game();
-        game.init(canvas);
+		game.init(canvas);
 	}
 };

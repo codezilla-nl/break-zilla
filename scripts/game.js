@@ -5,9 +5,18 @@ MY.Game.prototype = {
 		this.canvas = canvas;
 		this.context = canvas.getContext('2d');
 
+		this.isLeftKeyDown = false;
+		this.isRightKeyDown = false;
+
+		this.deltaX = 2;
+		this.deltaY = -2;
+
 		this.initBall();
 		this.initBricks();
 		this.initPaddle();
+
+		document.addEventListener('keydown', this.onKeyDown.bind(this));
+		document.addEventListener('keyup', this.onKeyUp.bind(this));
 
 		window.requestAnimationFrame(this.tick.bind(this));
 	},
@@ -19,20 +28,20 @@ MY.Game.prototype = {
 	},
 
 	initBricks: function () {
-		this.numberOfBrickRows = 5;
-		this.numberOfBrickCols = 10;
-
 		var padding = 10;
-		var width = (this.canvas.width - ((this.numberOfBrickCols * padding) + padding)) / this.numberOfBrickCols;
-		var height = 20 / 75 * width;
+		
+		this.brickRowCount = 5;
+		this.brickColumnCount = 10;
+		this.brickWidth = (this.canvas.width - ((this.brickColumnCount * padding) + padding)) / this.brickColumnCount;
+		this.brickHeight = 20 / 75 * this.brickWidth;
 
 		this.bricks = [];
-		for (var i = 0; i < this.numberOfBrickRows; i += 1) {
+		for (var i = 0; i < this.brickRowCount; i += 1) {
 			this.bricks[i] = [];
-			for (var j = 0; j < this.numberOfBrickCols; j += 1) {
-				var x = (j * width) + ((j + 1) * padding);
-				var y = (i * height) + ((i + 1) * padding);
-				this.bricks[i][j] = new MY.Brick(x, y, width, height);
+			for (var j = 0; j < this.brickColumnCount; j += 1) {
+				var x = (j * this.brickWidth) + ((j + 1) * padding);
+				var y = (i * this.brickHeight) + ((i + 1) * padding);
+				this.bricks[i][j] = new MY.Brick(x, y, this.brickWidth, this.brickHeight);
 			}
 		}
 	},
@@ -47,10 +56,54 @@ MY.Game.prototype = {
 	tick: function () {
 		this.update();
 		this.render();
+
+		window.requestAnimationFrame(this.tick.bind(this));
 	},
 
 	update: function () {
+		this.collisionDetection();
 
+		if (this.ball.x + this.deltaX > this.canvas.width - this.ball.radius || this.ball.x + this.deltaX < this.ball.radius) {
+			this.deltaX = -this.deltaX;
+		}
+		if (this.ball.y + this.deltaY < this.ball.radius) {
+			this.deltaY = -this.deltaY;
+		}
+		else if (this.ball.y + this.deltaY > this.canvas.height - this.ball.radius) {
+			if (this.ball.x > this.paddle.x && this.ball.x < this.paddle.x + this.paddle.width) {
+				this.deltaY = -this.deltaY;
+			} else {
+				this.ball.x = this.canvas.width / 2;
+				this.ball.y = this.canvas.height - 30;
+				this.deltaX = 3;
+				this.deltaY = -3;
+				this.paddle.x = (this.canvas.width - this.paddle.width) / 2;
+			}
+		}
+
+		this.ball.x += this.deltaX;
+		this.ball.y += this.deltaY;
+
+		if (this.isLeftKeyDown && this.paddle.x - 10 >= 0) {
+			this.paddle.x -= 10;
+		}
+		if (this.isRightKeyDown && this.paddle.x + 10 <= this.canvas.width - this.paddle.width) {
+			this.paddle.x += 10;
+		}
+	},
+
+	collisionDetection: function () {
+		for (var i = 0; i < this.brickRowCount; i += 1) {
+			for (var j = 0; j < this.brickColumnCount; j += 1) {
+				var brick = this.bricks[i][j];
+				if (brick.state === 1) {
+					if (this.ball.x > brick.x && this.ball.x < brick.x + brick.width && this.ball.y > brick.y && this.ball.y < brick.y + this.brickHeight) {
+						this.deltaY = -this.deltaY;
+						brick.state = 0;
+					}
+				}
+			}
+		}
 	},
 
 	render: function () {
@@ -67,14 +120,33 @@ MY.Game.prototype = {
 	},
 
 	renderBricks: function () {
-		for (var i = 0; i < this.numberOfBrickRows; i += 1) {
-			for (var j = 0; j < this.numberOfBrickCols; j += 1) {
-				this.bricks[i][j].render(this.context);
+		for (var i = 0; i < this.brickRowCount; i += 1) {
+			for (var j = 0; j < this.brickColumnCount; j += 1) {
+				var brick = this.bricks[i][j];
+				if (brick.state === 1) {
+					brick.render(this.context);
+				}
 			}
 		}
 	},
 
 	renderPaddle: function () {
 		this.paddle.render(this.context);
+	},
+
+	onKeyDown: function (event) {
+		if (event.which === MY.Key.LEFT) {
+			this.isLeftKeyDown = true;
+		} else if (event.which === MY.Key.RIGHT) {
+			this.isRightKeyDown = true;
+		}
+	},
+
+	onKeyUp: function (event) {
+		if (event.which === MY.Key.LEFT) {
+			this.isLeftKeyDown = false;
+		} else if (event.which === MY.Key.RIGHT) {
+			this.isRightKeyDown = false;
+		}
 	}
 };
